@@ -1,0 +1,8 @@
+URGENT SUBMISSION CHECKLIST
+1. Download/extract Olist CSV dataset into data/ (the seven filenames are in README).
+2. Create venv, install requirements, run: python pipeline.py
+3. If it stops at a quality alarm, inspect logs/pipeline.log and report the actual failures; do not hide them.
+4. Run: python make_charts.py
+5. Run the five SQL files in sql/analytics/ using SQLite DB Browser or Python sqlite3; paste real outputs into REPORT_TEMPLATE.md.
+6. Export report to PDF, maximum 5 pages.
+7. Push project folder to GitHub. Do not upload private keys or the database unless required.

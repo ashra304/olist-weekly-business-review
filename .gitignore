@@ -1,0 +1,30 @@
+# Python virtual environment
+.venv/
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Dataset and local database
+data/
+*.db
+
+# Logs
+logs/
+*.log
+
+# Generated charts (regenerate using make_charts.py)
+reports/generated/
+
+# Environment variables and secrets
+.env
+.env.*
+
+# IDE settings
+.vscode/
+
+# Temporary files
+*.tmp
+.DS_Store
+Thumbs.db
