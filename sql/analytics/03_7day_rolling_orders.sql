@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- Generate a continuous calendar between the min and max order dates,
 -- fill days with zero orders, and compute a 7-day rolling average
 -- (current day + preceding 6 calendar days).
@@ -44,5 +45,62 @@ rolling AS (
 SELECT order_date,
        order_count,
        ROUND(rolling_7_day_avg, 2) AS rolling_7_day_avg
+=======
+WITH bounds AS (
+    SELECT
+        DATE(MIN(order_purchase_timestamp)) AS min_date,
+        DATE(MAX(order_purchase_timestamp)) AS max_date
+    FROM mart_order_summary
+),
+
+calendar(order_date) AS (
+    SELECT min_date
+    FROM bounds
+    WHERE min_date IS NOT NULL
+
+    UNION ALL
+
+    SELECT DATE(julianday(c.order_date) + 1)
+    FROM calendar c
+    CROSS JOIN bounds b
+    WHERE c.order_date < b.max_date
+),
+
+base_daily AS (
+    SELECT
+        DATE(order_purchase_timestamp) AS order_date,
+        COUNT(DISTINCT order_id) AS order_count
+    FROM mart_order_summary
+    GROUP BY DATE(order_purchase_timestamp)
+),
+
+daily AS (
+    SELECT
+        c.order_date,
+        COALESCE(b.order_count, 0) AS order_count
+    FROM calendar c
+    LEFT JOIN base_daily b
+        ON c.order_date = b.order_date
+),
+
+rolling AS (
+    SELECT
+        d1.order_date,
+        d1.order_count,
+        (
+            SELECT AVG(d2.order_count)
+            FROM daily d2
+            WHERE julianday(d2.order_date)
+                BETWEEN julianday(d1.order_date) - 6
+                    AND julianday(d1.order_date)
+        ) AS rolling_7_day_avg
+    FROM daily d1
+)
+
+SELECT
+    order_date,
+    order_count,
+    ROUND(rolling_7_day_avg, 2) AS rolling_7_day_avg
+>>>>>>> e411fdb (Finalize analytics and business review)
 FROM rolling
 ORDER BY order_date;
